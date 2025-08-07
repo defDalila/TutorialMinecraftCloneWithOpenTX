@@ -8,6 +8,8 @@ namespace MinecraftClone;
 internal class Shader
 {
     int ProgramID;
+    
+    private static string _path = "../../../Shaders/";
     private bool _disposed = false;
 
     public Shader(string vertPath, string fragPath)
@@ -23,7 +25,7 @@ internal class Shader
         GL.ShaderSource(FragmentShaderID, LoadShaderSource(fragPath));
         CompileShader(FragmentShaderID);
 
-        ProgramID = BuildProgram(VertexShaderID, FragmentShaderID);
+        ProgramID = CreateProgram(VertexShaderID, FragmentShaderID);
 
     }
 
@@ -45,7 +47,7 @@ internal class Shader
         }
     }
 
-    private static int BuildProgram(int vertShaderId, int fragShaderId)
+    private static int CreateProgram(int vertShaderId, int fragShaderId)
     {
         var programId = GL.CreateProgram();
 
@@ -93,13 +95,13 @@ internal class Shader
         GC.SuppressFinalize(this);
     }
 
-    private static string LoadShaderSource(string filePath)
+    private static string LoadShaderSource(string file)
     {
         string shaderSource = "";
 
         try
         {
-            using (StreamReader reader = new StreamReader("Shaders/" + filePath))
+            using (StreamReader reader = new StreamReader(_path + file))
             {
                 shaderSource = reader.ReadToEnd();
             }
