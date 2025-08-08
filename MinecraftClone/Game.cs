@@ -4,7 +4,8 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using StbImageSharp;
-using System.Reflection.Emit;
+using Vector2 = OpenTK.Mathematics.Vector2;
+using Vector3 = OpenTK.Mathematics.Vector3;
 
 namespace MinecraftClone;
 internal class Game : GameWindow
@@ -14,36 +15,108 @@ internal class Game : GameWindow
     private static int _height;
 
     // Vertices de um quadrado
-    float[] vertices =
+    List<Vector3> vertices = new List<Vector3>()
     {
-        -0.5f, 0.5f, 0.0f,  // vertice superior Esq --- (0)
-        0.5f, 0.5f, 0.0f,   // vertice superior Dir --- (1)
-        0.5f, -0.5f, 0.0f,   // vertice inferior Dir --- (2)
-        -0.5f, -0.5f, 0.0f // vertice infefior Esq --- (3)
+    // front face
+        new Vector3(-0.5f, 0.5f, 0.5f), // topleft vert
+        new Vector3(0.5f, 0.5f, 0.5f), // topright vert
+        new Vector3(0.5f, -0.5f, 0.5f), // bottomright vert
+        new Vector3(-0.5f, -0.5f, 0.5f), // bottomleft vert
+        // right face
+        new Vector3(0.5f, 0.5f, 0.5f), // topleft vert
+        new Vector3(0.5f, 0.5f, -0.5f), // topright vert
+        new Vector3(0.5f, -0.5f, -0.5f), // bottomright vert
+        new Vector3(0.5f, -0.5f, 0.5f), // bottomleft vert
+        // back face
+        new Vector3(0.5f, 0.5f, -0.5f), // topleft vert
+        new Vector3(-0.5f, 0.5f, -0.5f), // topright vert
+        new Vector3(-0.5f, -0.5f, -0.5f), // bottomright vert
+        new Vector3(0.5f, -0.5f, -0.5f), // bottomleft vert
+        // left face
+        new Vector3(-0.5f, 0.5f, -0.5f), // topleft vert
+        new Vector3(-0.5f, 0.5f, 0.5f), // topright vert
+        new Vector3(-0.5f, -0.5f, 0.5f), // bottomright vert
+        new Vector3(-0.5f, -0.5f, -0.5f), // bottomleft vert
+        // top face
+        new Vector3(-0.5f, 0.5f, -0.5f), // topleft vert
+        new Vector3(0.5f, 0.5f, -0.5f), // topright vert
+        new Vector3(0.5f, 0.5f, 0.5f), // bottomright vert
+        new Vector3(-0.5f, 0.5f, 0.5f), // bottomleft vert
+        // bottom face
+        new Vector3(-0.5f, -0.5f, 0.5f), // topleft vert
+        new Vector3(0.5f, -0.5f, 0.5f), // topright vert
+        new Vector3(0.5f, -0.5f, -0.5f), // bottomright vert
+        new Vector3(-0.5f, -0.5f, -0.5f), // bottomleft vert
+
     };
 
-    float[] coords =
+
+    List<Vector2> coords = new List<Vector2>()
     {
-        0.0f, 1.0f,
-        1.0f, 1.0f,
-        1.0f, 0.0f,
-        0.0f, 0.0f
+        new Vector2(0f, 1f),
+        new Vector2(1f, 1f),
+        new Vector2(1f, 0f),
+        new Vector2(0f, 0f),
+
+        new Vector2(0f, 1f),
+        new Vector2(1f, 1f),
+        new Vector2(1f, 0f),
+        new Vector2(0f, 0f),
+
+        new Vector2(0f, 1f),
+        new Vector2(1f, 1f),
+        new Vector2(1f, 0f),
+        new Vector2(0f, 0f),
+
+        new Vector2(0f, 1f),
+        new Vector2(1f, 1f),
+        new Vector2(1f, 0f),
+        new Vector2(0f, 0f),
+
+        new Vector2(0f, 1f),
+        new Vector2(1f, 1f),
+        new Vector2(1f, 0f),
+        new Vector2(0f, 0f),
+
+        new Vector2(0f, 1f),
+        new Vector2(1f, 1f),
+        new Vector2(1f, 0f),
+        new Vector2(0f, 0f),
     };
 
-    // indices dos vertices para desenhar 2 triangulos e formar o retagulo
     uint[] indices =
     {
-        0, 1, 2, // Triangulo Superior
-        2, 3, 0
+        // first face
+        // top triangle
+        0, 1, 2,
+        // bottom triangle
+        2, 3, 0,
+
+        4, 5, 6,
+        6, 7, 4,
+
+        8, 9, 10,
+        10, 11, 8,
+
+        12, 13, 14,
+        14, 15, 12,
+
+        16, 17, 18,
+        18, 19, 16,
+
+        20, 21, 22,
+        22, 23, 20
     };
 
-    float[] colors =
+    List<Vector4> colors = new List<Vector4>()
     {
-        1.0f, 0.0f, 0.7f,
-        0.0f, 0.7f, 1.0f,
-        0.7f, 0.0f, 1.0f,
-        0.0f, 1.0f, 0.7f
+        new Vector4(1.0f, 0.0f, 0.7f, 1.0f),
+        new Vector4(0.0f, 0.7f, 1.0f, 1.0f),
+        new Vector4(0.7f, 0.0f, 1.0f, 1.0f),
+        new Vector4(0.0f, 1.0f, 0.7f, 1.0f)
+
     };
+
 
     // Vars Render Pipeline
     int vertexArrayObject;
@@ -51,6 +124,11 @@ internal class Game : GameWindow
     int elementBufferObject;
     Shader shader;
     Texture texturizer;
+    Camera camera;
+
+    // transformation variables
+
+    float yRot = 0f;
 
 
     public Game(int width, int height) : base(GameWindowSettings.Default,
@@ -89,8 +167,8 @@ internal class Game : GameWindow
         GL.BindVertexArray(vertexArrayObject);
 
         GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
-        GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float),
-                      vertices, BufferUsageHint.StaticDraw);       
+        GL.BufferData(BufferTarget.ArrayBuffer, vertices.Count * Vector3.SizeInBytes,
+                        vertices.ToArray(), BufferUsageHint.StaticDraw);
         GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
         GL.EnableVertexArrayAttrib(vertexArrayObject, 0);
 
@@ -101,8 +179,8 @@ internal class Game : GameWindow
 
         var textVbo = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, textVbo);
-        GL.BufferData(BufferTarget.ArrayBuffer, coords.Length * sizeof(float),
-            coords, BufferUsageHint.StaticCopy);
+        GL.BufferData(BufferTarget.ArrayBuffer, coords.Count * Vector2.SizeInBytes,
+            coords.ToArray(), BufferUsageHint.StaticCopy);
         GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 0, 0);
         GL.EnableVertexArrayAttrib(vertexArrayObject, 1);
 
@@ -112,7 +190,12 @@ internal class Game : GameWindow
         elementBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementBufferObject);
         GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint),
-                      indices, BufferUsageHint.StaticDraw);
+                        indices, BufferUsageHint.StaticDraw);
+
+        GL.Enable(EnableCap.DepthTest);
+
+        camera = new(_width, _height, Vector3.Zero);
+        CursorState = CursorState.Grabbed;
 
     }
 
@@ -130,8 +213,8 @@ internal class Game : GameWindow
     {
         base.OnRenderFrame(args);
 
-        GL.ClearColor(Color4.LightBlue);
-        GL.Clear(ClearBufferMask.ColorBufferBit);
+        GL.ClearColor(Color4.LightSkyBlue);
+        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
 
         // Desenhar o Quadrado
@@ -139,9 +222,32 @@ internal class Game : GameWindow
         GL.BindVertexArray(vertexArrayObject);
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementBufferObject);
         GL.BindTexture(TextureTarget.Texture2D, texturizer.TextureId);
-        
 
-        GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
+
+        // Transformacao de Matrizes (4 x 4, rotacao, tranformacao escala, projecao) 
+        //var radianos = MathHelper.DegreesToRadians(60.0f);
+
+        Matrix4 model = Matrix4.Identity;
+        Matrix4 view = camera.GetViewMatrix();
+
+        Matrix4 proj = camera.GetProjectionMatrix();
+
+        model = Matrix4.CreateRotationY(yRot);
+        yRot += 0.001f;
+
+        Matrix4 translation = Matrix4.CreateTranslation(0f, 0f, -3f);
+        model *= translation;
+
+        var modelLocation = GL.GetUniformLocation(shader.ProgramID, "model");
+        var viewLocation = GL.GetUniformLocation(shader.ProgramID, "view");
+        var projLocation = GL.GetUniformLocation(shader.ProgramID, "proj");
+
+        GL.UniformMatrix4(modelLocation, true, ref model);
+        GL.UniformMatrix4(viewLocation, true, ref view);
+        GL.UniformMatrix4(projLocation, true, ref proj);
+
+
+        GL.DrawElements(PrimitiveType.Triangles, indices.Length * 6, DrawElementsType.UnsignedInt, 0);
 
 
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
@@ -156,6 +262,11 @@ internal class Game : GameWindow
     protected override void OnUpdateFrame(FrameEventArgs args)
     {
         base.OnUpdateFrame(args);
+
+        MouseState mouse = MouseState;
+        KeyboardState input = KeyboardState;
+
+        camera.Update(input, mouse, args);
 
         if (KeyboardState.IsKeyDown(Keys.Escape))
             Close();

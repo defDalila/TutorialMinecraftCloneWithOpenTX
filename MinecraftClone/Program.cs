@@ -1,6 +1,6 @@
 ﻿using MinecraftClone;
 
-using (Game game = new Game(800, 800))
+using (Game game = new Game(1280, 720))
 {
     game.Run();
 }

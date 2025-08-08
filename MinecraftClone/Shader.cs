@@ -7,7 +7,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 namespace MinecraftClone;
 internal class Shader
 {
-    int ProgramID;
+    public int ProgramID;
     
     private static string _path = "../../../Shaders/";
     private bool _disposed = false;
